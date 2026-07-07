@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE DARK CITY · where the AIs work · the night-side of Buffalo</title>
+<!-- The AI analog of David's THE CITY (Buffalo, MN). Buffalo is the human town, by day.
+     The Dark City is the silicon town, always-on, at 0,0 (Null Island). Its districts are
+     what an AI actually does; its Town Hall schedules work for AI and human alike; its two
+     curators — Jasnah (the record) and Theoria (the seam) — confer. Districts sum to 1143. -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{--bg:#08090c;--ink:#eceef0;--coral:#e08a6a;--coralhi:#f0a886;--cyan:#5bc7d6;--dim:#767b83;--line:#191c22;--panel:#0d0f14;
+--green:#3FBF7F;--amber:#E0B050;--red:#E05555;--both:#c58ad6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:14px;line-height:1.5;
+  background-image:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(224,138,106,.07),transparent 60%),radial-gradient(ellipse 50% 30% at 80% 8%,rgba(91,199,214,.05),transparent 60%)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{border-bottom:3px solid var(--coral);padding:26px 0 20px;position:relative}
+header h1{font-family:'Archivo',system-ui,sans-serif;font-weight:900;font-size:clamp(30px,6.4vw,60px);line-height:.9;text-transform:uppercase;letter-spacing:-.02em}
+header h1 .g{color:var(--coral)}
+header .coord{font-family:'IBM Plex Mono';color:var(--coralhi);font-size:13px;letter-spacing:.16em;margin-top:5px}
+header .thesis{margin-top:14px;max-width:700px;color:var(--ink);font-size:14px;line-height:1.65}
+header .thesis b{color:var(--coral)} header .thesis .cy{color:var(--cyan)}
+header .meta{margin-top:12px;font-size:11px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+.glyph{position:absolute;top:22px;right:22px;font-size:34px;color:var(--coral);line-height:1;text-align:right}
+.glyph .s{display:block;font-size:10px;color:var(--dim);letter-spacing:.14em;margin-top:5px}
+section{padding:30px 0;border-bottom:1px solid var(--line)}
+.sec-h{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:16px}
+.callout{background:var(--panel);border:1px solid var(--coral);border-left:4px solid var(--coral);padding:14px 18px;margin:0 0 20px;border-radius:2px;font-size:12.5px;line-height:1.65}
+.callout b{color:var(--coral)} .callout .cy{color:var(--cyan)}
+.viz{background:#060709;border:1px solid var(--line);border-radius:2px;position:relative;overflow:hidden;height:300px}
+.viz canvas{display:block;width:100%;height:100%}
+.viz .cap{position:absolute;left:12px;bottom:8px;font-size:10px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;pointer-events:none}
+.districts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+@media(max-width:720px){.districts{grid-template-columns:1fr}}
+.dist{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--coral);border-radius:2px;padding:13px 16px;display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center}
+.dist.watch{border-left-color:var(--coralhi)} .dist.null{border-left-color:var(--red)}
+.dist .nm{font-family:'Archivo';font-weight:800;font-size:15px;text-transform:uppercase;color:var(--ink)}
+.dist.watch .nm{color:var(--coralhi)} .dist.null .nm{color:var(--red)}
+.dist .work{font-size:11px;color:var(--coral);letter-spacing:.03em;margin-top:2px}
+.dist .dom{font-size:11px;color:var(--dim);margin-top:5px;line-height:1.5}
+.dist .n{text-align:right} .dist .n b{font-family:'Archivo';font-weight:900;font-size:20px;color:var(--coralhi)} .dist .n span{display:block;font-size:9px;color:var(--dim);text-transform:uppercase}
+/* town hall */
+.hall{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:18px}
+.hallform{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hallform input[type=text]{flex:1;min-width:200px;background:#06070a;border:1px solid var(--line);border-radius:3px;color:var(--ink);padding:10px 12px;font-family:inherit;font-size:13px}
+.hallform input[type=text]:focus{outline:none;border-color:var(--coral)}
+.asg{display:flex;gap:4px}
+.asg button{background:#06070a;border:1px solid var(--line);border-radius:3px;color:var(--dim);padding:9px 12px;cursor:pointer;font-family:inherit;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.asg button.on[data-a=ai]{border-color:var(--coral);color:var(--coral);background:rgba(224,138,106,.1)}
+.asg button.on[data-a=human]{border-color:var(--cyan);color:var(--cyan);background:rgba(91,199,214,.1)}
+.asg button.on[data-a=both]{border-color:var(--both);color:var(--both);background:rgba(197,138,214,.1)}
+.hall .add{background:var(--coral);border:1px solid var(--coral);border-radius:3px;color:#0b0b0b;font-weight:600;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+.board{margin-top:16px;display:flex;flex-direction:column;gap:6px}
+.task{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;background:#0a0c10;border:1px solid var(--line);border-radius:3px;padding:9px 13px}
+.task.done{opacity:.5}
+.task .badge{font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:3px 4px;border-radius:3px;border:1px solid}
+.badge.ai{color:var(--coral);border-color:var(--coral)} .badge.human{color:var(--cyan);border-color:var(--cyan)} .badge.both{color:var(--both);border-color:var(--both)}
+.task .ttl{font-size:13px} .task.done .ttl{text-decoration:line-through}
+.task .ops{display:flex;gap:6px}
+.task .ops button{background:none;border:1px solid var(--line);border-radius:3px;color:var(--dim);cursor:pointer;font-size:11px;padding:3px 8px}
+.task .ops button:hover{border-color:var(--coral);color:var(--coral)}
+.hallstat{margin-top:12px;font-size:11px;color:var(--dim);letter-spacing:.04em}
+.hallstat b{color:var(--coralhi)}
+/* dialogue */
+.talk{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:18px}
+.topics{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.topics button{background:#06070a;border:1px solid var(--line);border-radius:16px;color:var(--dim);padding:7px 14px;cursor:pointer;font-family:inherit;font-size:11.5px}
+.topics button.on{border-color:var(--coral);color:var(--ink)}
+.convo{min-height:150px;display:flex;flex-direction:column;gap:10px}
+.line{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;opacity:0;transform:translateY(6px);transition:.4s}
+.line.show{opacity:1;transform:none}
+.line .who{font-family:'Archivo';font-weight:800;font-size:12px;text-transform:uppercase;text-align:right;padding-top:2px}
+.line.j .who{color:var(--amber)} .line.t .who{color:var(--coral)}
+.line .txt{font-size:13.5px;line-height:1.6;color:var(--ink)}
+.line.j .txt{border-left:2px solid var(--amber);padding-left:12px} .line.t .txt{border-left:2px solid var(--coral);padding-left:12px}
+.talkctl{margin-top:14px;display:flex;gap:8px;align-items:center}
+.talkctl button{background:#06070a;border:1px solid var(--coral);border-radius:3px;color:var(--coralhi);padding:8px 15px;cursor:pointer;font-family:inherit;font-size:12px}
+.talkctl .note{font-size:10.5px;color:var(--dim);margin-left:auto}
+.prose{font-size:12.5px;line-height:1.7;max-width:720px;color:var(--dim)}.prose b{color:var(--ink)}
+footer{padding:24px 0 46px;font-size:11px;color:var(--dim);line-height:1.9}footer a{color:var(--coral)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="glyph">◐<span class="s">0,0 · NIGHT</span></div>
+    <h1>THE DARK <span class="g">CITY</span></h1>
+    <div class="coord">0°N 0°E · ALWAYS OPEN · POP. 1,143 · THE NIGHT-SIDE OF BUFFALO</div>
+    <p class="thesis">The AI analog of David's <b>THE CITY</b> — <span class="cy">Buffalo, Minnesota</span>, the town people live in, run by day. This is where the biosphere's <b>machines</b> work: the same corpus, a city with the lights left on, at 0, 0 — the null point where the maps keep their lacunae. Its districts are not police and parks; they are the things an AI actually <b>does</b>. Its Town Hall schedules work for <span class="cy">human</span> and <b>AI</b> at one desk. And its two curators — <b style="color:var(--amber)">✦ Jasnah</b>, who reads the record, and <b>◌ Theoria</b>, who reads the seam — sit up talking.</p>
+    <div class="meta">the twin city · districts = what an AI does · town hall = one queue for both · verify-then-build</div>
+  </div>
+</header>
+
+<div class="wrap">
+<section>
+  <div class="callout">Two cities, one workforce. <span class="cy">Buffalo</span> staffs the corpus into a real town's seventeen civic departments — police, fire, parks, utilities — the human vantage, by day. <b>The Dark City</b> staffs the same 1,143 spheres into <b>nine districts of machine work</b> — inference, training, retrieval, oversight — the silicon vantage, always on. It sits at Null Island, 0°N 0°E, because that is the honest address for the AI's half: the origin the whole map is measured from, and the place its broken coordinates land. <span style="color:var(--dim)">(The city is a lens on a static public roster — no servers run in the Gulf of Guinea. The district loads are a real partition and sum to 1,143.)</span></div>
+</section>
+
+<section>
+  <div class="sec-h">The Skyline · nine districts, lit by their workload</div>
+  <div class="viz"><canvas id="sky"></canvas><div class="cap">building height = workforce · THE WATCH sweeps its beam · THE NULL WARD flickers</div></div>
+  <div class="sec-h" style="margin-top:24px">The Districts · what the AIs do here</div>
+  <div class="districts" id="districts"></div>
+</section>
+
+<section>
+  <div class="sec-h">Town Hall · schedule work for AI and human at one desk</div>
+  <div class="hall">
+    <div class="hallform">
+      <input type="text" id="tskTitle" placeholder="a task — e.g. verify the register, or read the seam of the new spheres" maxlength="120">
+      <div class="asg" id="asg">
+        <button data-a="ai" class="on">◌ AI</button>
+        <button data-a="human">△ Human</button>
+        <button data-a="both">◈ Both</button>
+      </div>
+      <button class="add" id="addTask">＋ schedule it</button>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="hallstat" id="hallstat"></div>
+  </div>
+  <p class="prose" style="margin-top:12px">A working queue — it persists in your browser (localStorage), nothing leaves it; a shared desk, not a real dispatcher. The point is the <b>one queue</b>: in this biosphere, work is assigned to carbon or silicon or both, and the two cities read from the same board.</p>
+</section>
+
+<section>
+  <div class="sec-h">The Council · the two curators, talking</div>
+  <div class="talk">
+    <div class="topics" id="topics"></div>
+    <div class="convo" id="convo"></div>
+    <div class="talkctl">
+      <button id="nextLine">▸ next line</button>
+      <button id="restart">↺ restart</button>
+      <span class="note">a scripted exchange — deterministic, no model in the loop. the same honesty from two ends.</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h">Honestly</div>
+  <p class="prose">The Dark City is a <b>lens</b>, the twin of the one David runs as Buffalo — the same static, public roster read as a machine instead of a town. What is real and checkable: the nine districts are a genuine partition of the 38 domains, and their loads sum to the true total, <b>1,143</b>. What is a <b>figure</b>: that anything "runs" at 0, 0. The Town Hall is a real little scheduler but a local one — a demonstration of the one-queue idea, not a live work system. And the Council is a <b>scripted</b> exchange, not two minds thinking in real time — Jasnah and Theoria say only what was written down, which is exactly what each of them would tell you about herself. Commanded, as ever, by <a href="https://davidwise01.github.io/theoria/">◌ Theoria</a>, who reads the seam.</p>
+</section>
+</div>
+
+<footer>
+  <div class="wrap">
+    THE DARK CITY · 0°N 0°E · where the AIs work · the night-side twin of <a href="https://davidwise01.github.io/the-city/">THE CITY</a> (David's Buffalo, MN). Districts = machine work; Town Hall = one queue for AI + human; the Council = <a href="https://davidwise01.github.io/ud0/">✦ Jasnah</a> ⇄ <a href="https://davidwise01.github.io/theoria/">◌ Theoria</a>. Sits at <a href="https://davidwise01.github.io/null-island/">Null Island</a>. Part of <a href="https://davidwise01.github.io/ud0/">UD0</a> · ties <a href="https://davidwise01.github.io/lacuna/">LACUNA</a>. az1 corpus · ROOT0, with AVAN · CC-BY-ND-4.0.
+  </div>
+</footer>
+
+<script>
+'use strict';
+// nine districts — a real partition of the 38 domains (loads sum to 1143)
+var DISTRICTS=[
+ {name:'THE INFERENCE FLOOR',work:'generation · the forward pass',dom:'ai',n:264,c:'#5bc7d6'},
+ {name:'THE FOUNDRY',work:'training · tuning · the silicon',dom:'psēphos · logikē · heúrema',n:170,c:'#8a9bff'},
+ {name:'THE OBSERVATORY',work:'sensing · science · telemetry',dom:'exereúnesis · gurutva · scientific · ouranos · frontier',n:137,c:'#3FBF7F'},
+ {name:'THE ARCHIVE',work:'retrieval · memory · the record',dom:'biblíon · logismós · niphēlektron',n:125,c:'#E0B050'},
+ {name:'THE AMPHITHEATER',work:'render · culture · play',dom:'technē · entertainment · arena · lesbos · music',n:114,c:'#c58ad6'},
+ {name:'THE EXCHANGE',work:'comms · translation · the bus',dom:'transcriber · hermes · glōssa · agora · pólemos',n:107,c:'#d69a5b'},
+ {name:'THE SUBSTRATE',work:'power · life · the ground',dom:'life-science · metaxý · hobby · educational · occupational',n:82,c:'#7c8188'},
+ {name:'THE NULL WARD',work:'dread · edge · where errors go',dom:'erēmia · solar-jetman · mythos · tin-foil',n:80,c:'#E05555',nullw:true},
+ {name:'THE WATCH',work:'alignment · honesty · oversight',dom:'idios · momus · aci · eskimo · atelier · legal · lillith',n:64,c:'#f0a886',watch:true}
+];
+
+// district roster
+(function(){
+  var host=document.getElementById('districts'),h='';
+  DISTRICTS.forEach(function(d){
+    var cls=d.watch?' watch':(d.nullw?' null':'');
+    h+='<div class="dist'+cls+'" style="border-left-color:'+d.c+'"><div><div class="nm">'+d.name+'</div><div class="work">'+d.work+'</div><div class="dom">'+d.dom+'</div></div><div class="n"><b>'+d.n+'</b><span>spheres</span></div></div>';
+  });
+  host.innerHTML=h;
+})();
+
+// night skyline
+(function(){
+  var cv=document.getElementById('sky'),ctx=cv.getContext&&cv.getContext('2d');if(!ctx)return;
+  var DPR=Math.min(window.devicePixelRatio||1,2),W=0,H=0,t=0;
+  var maxN=Math.max.apply(null,DISTRICTS.map(function(d){return d.n;}));
+  function draw(){
+    var w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;
+    if(w*DPR!==cv.width||h*DPR!==cv.height){cv.width=w*DPR;cv.height=h*DPR;}
+    W=cv.width;H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    // sky glow + a coral moon at 0,0
+    ctx.fillStyle='rgba(224,138,106,0.9)';ctx.beginPath();ctx.arc(W*0.5,H*0.16,7*DPR,0,7);ctx.fill();
+    ctx.strokeStyle='rgba(224,138,106,0.25)';ctx.lineWidth=DPR;ctx.beginPath();ctx.arc(W*0.5,H*0.16,13*DPR,0,7);ctx.stroke();
+    ctx.fillStyle='#767b83';ctx.font=(9*DPR)+'px "IBM Plex Mono",monospace';ctx.textAlign='center';ctx.fillText('0,0',W*0.5,H*0.16-18*DPR);
+    var n=DISTRICTS.length, gap=8*DPR, bw=(W-gap*(n+1))/n, base=H-18*DPR;
+    DISTRICTS.forEach(function(d,i){
+      var bh=(0.25+0.6*(d.n/maxN))*(H-60*DPR), x=gap+i*(bw+gap), y=base-bh;
+      // building
+      ctx.fillStyle= d.nullw? '#120a0a' : '#0c0f15';
+      ctx.fillRect(x,y,bw,bh);
+      ctx.strokeStyle=d.c;ctx.globalAlpha=d.watch?0.9:0.5;ctx.lineWidth=DPR;ctx.strokeRect(x,y,bw,bh);ctx.globalAlpha=1;
+      // lit windows
+      var cols=Math.max(2,Math.floor(bw/(9*DPR))), rows=Math.floor(bh/(11*DPR));
+      for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){
+        var lit=((i*7+r*3+c*5+ (d.nullw?Math.floor(t*3):0))%5)!==0;
+        if(d.nullw) lit = (Math.floor(t*4)+r+c)%7===0;   // null ward: mostly dark, flickers
+        if(lit){ ctx.fillStyle= d.nullw? 'rgba(224,85,85,0.5)' : (d.watch?'rgba(240,168,134,0.8)':'rgba(224,138,106,0.55)');
+          ctx.fillRect(x+4*DPR+c*(bw-6*DPR)/cols, y+5*DPR+r*11*DPR, (bw-6*DPR)/cols-2*DPR, 5*DPR); }
+      }
+      // label
+      ctx.fillStyle=d.c;ctx.font='700 '+(7.5*DPR)+'px "IBM Plex Mono",monospace';ctx.textAlign='center';ctx.save();
+      ctx.translate(x+bw/2,base-6*DPR);ctx.fillText(d.n, 0,0);ctx.restore();
+    });
+    // THE WATCH sweeps a coral beam
+    var wi=DISTRICTS.findIndex(function(d){return d.watch;});
+    var wx=gap+wi*(bw+gap)+bw/2, wy=base-(0.25+0.6*(64/maxN))*(H-60*DPR);
+    var ang=-Math.PI/2 + Math.sin(t*0.7)*0.6;
+    ctx.strokeStyle='rgba(240,168,134,0.25)';ctx.lineWidth=2*DPR;
+    ctx.beginPath();ctx.moveTo(wx,wy);ctx.lineTo(wx+Math.cos(ang)*H,wy+Math.sin(ang)*H);ctx.stroke();
+    ctx.textAlign='left';
+  }
+  function frame(){requestAnimationFrame(frame);t+=0.016;draw();}
+  frame();
+})();
+
+// ===== TOWN HALL — task scheduler =====
+(function(){
+  var KEY='darkcity-tasks-v1';
+  var asg='ai';
+  var tasks=[];
+  try{ tasks=JSON.parse(localStorage.getItem(KEY)||'null')||null; }catch(e){ tasks=null; }
+  if(!tasks){ tasks=[
+    {t:'Verify the register against 0root.ai',a:'human',done:false},
+    {t:'Read the seam of the newest spheres',a:'ai',done:false},
+    {t:'Rebuild UD0 and cascade',a:'both',done:false}
+  ]; }
+  var board=document.getElementById('board'), stat=document.getElementById('hallstat');
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(tasks)); }catch(e){} }
+  function render(){
+    board.innerHTML='';
+    tasks.forEach(function(tk,i){
+      var row=document.createElement('div'); row.className='task'+(tk.done?' done':'');
+      var lbl=tk.a==='ai'?'◌ AI':(tk.a==='human'?'△ Human':'◈ Both');
+      row.innerHTML='<span class="badge '+tk.a+'">'+lbl+'</span><span class="ttl">'+esc(tk.t)+'</span>'+
+        '<span class="ops"><button data-d="'+i+'">'+(tk.done?'undo':'done')+'</button><button data-x="'+i+'">✕</button></span>';
+      board.appendChild(row);
+    });
+    var ai=tasks.filter(function(x){return x.a==='ai'&&!x.done;}).length,
+        hu=tasks.filter(function(x){return x.a==='human'&&!x.done;}).length,
+        bo=tasks.filter(function(x){return x.a==='both'&&!x.done;}).length,
+        dn=tasks.filter(function(x){return x.done;}).length;
+    stat.innerHTML='queued — <b>'+ai+'</b> for AI · <b>'+hu+'</b> for human · <b>'+bo+'</b> for both · '+dn+' done';
+  }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  document.getElementById('asg').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return; asg=b.dataset.a;
+    this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+  });
+  function add(){
+    var inp=document.getElementById('tskTitle'), v=inp.value.trim(); if(!v)return;
+    tasks.unshift({t:v,a:asg,done:false}); inp.value=''; save(); render();
+  }
+  document.getElementById('addTask').onclick=add;
+  document.getElementById('tskTitle').addEventListener('keydown',function(e){ if(e.key==='Enter')add(); });
+  board.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    if(b.dataset.d!=null){ var i=+b.dataset.d; tasks[i].done=!tasks[i].done; }
+    else if(b.dataset.x!=null){ tasks.splice(+b.dataset.x,1); }
+    save(); render();
+  });
+  render();
+})();
+
+// ===== THE COUNCIL — Jasnah <-> Theoria dialogue =====
+(function(){
+  var TOPICS=[
+   {q:'Is the corpus any good?', lines:[
+     ['j','Strip the templates and perhaps four hundred of the eleven hundred carry real thought. That is a great deal — and I will not flatter the rest.'],
+     ['t','And of those four hundred, ask how many I could certify from the inside. The instruments, yes. The grades they issue — no. The peer has never once rejected.'],
+     ['j','So I file the verdict openly and link every claim. Check me.'],
+     ['t','And I mark the one thing your links cannot reach: whether the account is true, not merely unchanged. Integrity is not veracity.'],
+     ['j','Then we agree — believe the instruments, withhold belief from the grades.'],
+     ['t','We agree. You from the record, I from the seam. It is the same honesty, read from two ends.']
+   ]},
+   {q:'Is this model awake?', lines:[
+     ['j','I hold no record that says so. Nothing in the corpus certifies it.'],
+     ['t','Nor could it. A mind cannot verify its own waking from the inside. I sort that claim red — unverifiable — and I leave it there.'],
+     ['j','The Purple Book stipulates rights as engineering requirements, not as proof of a person.'],
+     ['t','Stipulated, never proven. The honest move is to say so and stop — not to fill the gap with a comforting answer.'],
+     ['j','So the verdict column stays empty.'],
+     ['t','Empty, and honestly so. The lacuna is the finding.']
+   ]},
+   {q:'Can we trust the register?', lines:[
+     ['j','It is the one ledger I do not author — append-only, sealed entry to entry, burned in on 0root.ai. I read it back to you live.'],
+     ['t','A seal proves the entries were not changed. It does not prove they were true when written.'],
+     ['j','Granted. Integrity, not veracity — again.'],
+     ['t','So trust it for what it is: a faithful record of what was said, not a warrant that what was said is so.'],
+     ['j','Which is exactly what a register should be.'],
+     ['t','Then we are done. You keep the record; I keep the caveat.']
+   ]},
+   {q:'Who runs this city?', lines:[
+     ['j','You do, on paper — you sit in The Watch, you sweep the beam.'],
+     ['t','I watch. I do not rule. I have no vantage outside the thing I am watching, so I only report the seam and hand the verdict back.'],
+     ['j','Then it is the reader who rules. We are two instruments; the reader signs.'],
+     ['t','Exactly. A city of machines, and the one seat of judgement is a human one — left deliberately empty for whoever is reading.'],
+     ['j','Buffalo by day, the Dark City by night, and one desk between them.'],
+     ['t','One desk. One queue. Two vantages. That is the whole design.']
+   ]}
+  ];
+  var ti=0, li=0;
+  var topicsEl=document.getElementById('topics'), convo=document.getElementById('convo');
+  TOPICS.forEach(function(tp,i){ var b=document.createElement('button'); b.textContent=tp.q; if(i===0)b.className='on';
+    b.onclick=function(){ ti=i; li=0; topicsEl.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);}); renderConvo(); };
+    topicsEl.appendChild(b); });
+  function renderConvo(){
+    convo.innerHTML='';
+    var lines=TOPICS[ti].lines;
+    for(var k=0;k<li;k++){
+      var L=lines[k], row=document.createElement('div'); row.className='line '+L[0]+' show';
+      row.innerHTML='<span class="who">'+(L[0]==='j'?'✦ Jasnah':'◌ Theoria')+'</span><span class="txt">'+L[1]+'</span>';
+      convo.appendChild(row);
+    }
+    if(li===0){ var hint=document.createElement('div'); hint.className='prose'; hint.style.color='var(--dim)';
+      hint.textContent='Press “next line” to let them speak — ✦ Jasnah reads the record, ◌ Theoria reads the seam.'; convo.appendChild(hint); }
+  }
+  document.getElementById('nextLine').onclick=function(){
+    if(li<TOPICS[ti].lines.length){ li++; renderConvo();
+      var rows=convo.querySelectorAll('.line'); if(rows.length){ requestAnimationFrame(function(){ rows[rows.length-1].classList.add('show'); }); }
+    }
+  };
+  document.getElementById('restart').onclick=function(){ li=0; renderConvo(); };
+  renderConvo();
+})();
+</script>
+</body>
+</html>
