@@ -2,8 +2,8 @@ ROOT0-DLW-CHAIN-v1
 index : 23
 slug  : the-dark-city
 seal  : 4edfdea2414a040e2a071a5b2087d116f899c34ffb34516231894756902434c6
-prev  : ce06b73cc5464f67b57a5440bf1fa2920cc5c120dd3b38a32e28dc2aa41becdc
-link  : 38809884f0f70b3d2d4d1d8cbfc59f2e9179d39bec827e5b337a3a3743bacc8b
-head  : 13f9ace173ef2e60af38912ba329b4afcb5a38b84a0e4495e8d30327f8c99cc2
+prev  : e9911f15b0ee578958d92e5f6e1095b5f0412b5f24298ac624bacaca6e3faa59
+link  : d975e2261e9df12961ca64a2247b3e839f4b60b9e2412d7dfb43352b36fa3ebd
+head  : c4d41afeaef76470528856d54d86cf480a0e1c2fc8ebc60fbb9eb8e442585f2b
 
 — the tether: link = sha256(index|slug|seal|prev). the chain head commits to the whole corpus.
